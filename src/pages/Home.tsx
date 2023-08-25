@@ -108,6 +108,7 @@ export default function Home() {
   let mappedPokemonData = pokemonList.map((el:PokemonDetails) => {
     if(el.types !== undefined)
     return {
+        id:el.id,
         name:el.name,
         type:el.types.map((e) => e.type.name)
     }
@@ -118,12 +119,9 @@ export default function Home() {
       <TitleContainer>Pokedex</TitleContainer>
       <CardsContainer>
         {JSON.stringify(mappedPokemonData)}
-        <PokemonCard></PokemonCard>
-        <PokemonCard></PokemonCard>
-        <PokemonCard></PokemonCard>
-        <PokemonCard></PokemonCard>
-        <PokemonCard></PokemonCard>
-        <PokemonCard></PokemonCard>
+        {mappedPokemonData && mappedPokemonData.map((el) => (
+            <PokemonCard id={el?.id} name={el?.name} types={el?.type}></PokemonCard>
+        ))}
       </CardsContainer>
     </PageContainer>
   );
