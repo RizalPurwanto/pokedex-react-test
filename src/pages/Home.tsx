@@ -1,4 +1,5 @@
 import styled from "@emotion/styled"
+import PokemonCard from "../components/PokemonCard"
 
 const PageContainer = styled.div`
     height:100vh;
@@ -26,16 +27,6 @@ margin-left:10vw;
 gap:20px;
 `
 
-const CardFrame = styled.div`
-display:flex;
-flex-direction:column;
-gap:10px;
-background-color:grey;
-width: 200px;
-height: 300px;
-border-radius:10px;
-`
-
 
 export default function Home() {
 
@@ -44,14 +35,13 @@ export default function Home() {
         Pokedex
         </TitleContainer>
         <CardsContainer>
-            <CardFrame></CardFrame>
-            <CardFrame></CardFrame>
-            <CardFrame></CardFrame>
-            <CardFrame></CardFrame>
-            <CardFrame></CardFrame>
-            <CardFrame></CardFrame>
-            <CardFrame></CardFrame>
-            <CardFrame></CardFrame>
+            <PokemonCard></PokemonCard>
+            <PokemonCard></PokemonCard>
+            <PokemonCard></PokemonCard>
+            <PokemonCard></PokemonCard>
+            <PokemonCard></PokemonCard>
+            <PokemonCard></PokemonCard>
+           
             
         </CardsContainer>
 
