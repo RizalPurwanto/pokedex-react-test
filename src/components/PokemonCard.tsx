@@ -19,25 +19,26 @@ const CardName = styled.div`
   background-color: wheat;
   text-align: left;
   color: #313638;
-  padding: 3px;
+  padding: 5px;
   border-radius: 5px;
   font-weight: 600;
   border-style:solid;
   border-width:1px;
-  border-color:darkSlateGray;
+  border-color:#1d2929;
 `;
 
 const PokemonImageFrame = styled.div`
   width: 93%;
+  height:62%;
   background-color: wheat;
   padding: 4px;
   display: flex;
   flex-direction: row;
   justify-content: center;
-  border-radius:4px;
+  border-radius:10px;
   border-style:solid;
   border-width:1px;
-  border-color:darkSlateGray;
+  border-color:#1d2929;
 `;
 
 const PokemonType = styled.div`
@@ -50,8 +51,8 @@ const PokemonType = styled.div`
   border-radius: 3px;
   font-weight: 600;
   border-style:solid;
-  border-width:0.5px;
-  border-color:darkSlateGray;
+  border-width:1px;
+  border-color:#1d2929;
 `;
 
 interface PokemonCardProps {
@@ -99,7 +100,7 @@ export default function PokemonCard(props: PokemonCardProps) {
     }
     
     if (type === "electric") {
-      return "orange ";
+      return "#FDDA0D";
     }
 
     if (type === "fire") {
