@@ -66,6 +66,17 @@ interface PokemonDetails {
 export default function Home() {
   const [offSet, setOffSet] = useState(0);
   const [pokemonList, setPokemonList] = useState<PokemonDetails[]>([]);
+    const [isLoading, setIsLoading] = useState(false)
+
+    
+    const handleScroll = () => {
+        console.log(window.innerHeight + document.documentElement.scrollTop, `window.innerHeight + document.documentElement.scrollTop`)
+        console.log(document.documentElement.offsetHeight, `document.documentElement.offsetHeight`)
+        if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight+17 || isLoading) {
+          return;
+        }
+        fetchPokemons();
+      };
 
   async function getPokemonDetails(url: string): Promise<any> {
     const res = await axios.get(url).then((resp) => {
@@ -78,32 +89,43 @@ export default function Home() {
 
     return res;
   }
+  async function fetchPokemons() {
+    setIsLoading(true)
+    axios
+      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=20`)
+      .then(async(resp) => {
+        
+
+        const pokemons = resp.data.results;
+
+        let pokemonArr =await Promise.all(pokemons.map(async (pokemon: any) => {
+          let pokemonDetails = await getPokemonDetails(pokemon.url);
+          // console.log(pokemonDetails, "pokemonDetails in foreach")
+          return pokemonDetails
+        })) 
+        console.log(pokemonArr, "pokemonArr");
+
+        setPokemonList([...pokemonList, ...pokemonArr]);
+          setOffSet(offSet+20)
+
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        setIsLoading(false)
+      });
+  }
 
   useEffect(() => {
-    async function fetchPokemons() {
-      axios
-        .get(`https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=20`)
-        .then(async(resp) => {
-          
-
-          const pokemons = resp.data.results;
-
-          let pokemonArr =await Promise.all(pokemons.map(async (pokemon: any) => {
-            let pokemonDetails = await getPokemonDetails(pokemon.url);
-            // console.log(pokemonDetails, "pokemonDetails in foreach")
-            return pokemonDetails
-          })) 
-          console.log(pokemonArr, "pokemonArr");
-
-          setPokemonList([...pokemonList, ...pokemonArr]);
-        })
-
-        .catch((err) => {
-          console.log(err);
-        });
-    }
+    
     fetchPokemons();
   }, []);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isLoading]);
 
   let mappedPokemonData = pokemonList.map((el:PokemonDetails) => {
     if(el.types !== undefined)
@@ -118,7 +140,7 @@ export default function Home() {
     <PageContainer>
       <TitleContainer>Pokedex</TitleContainer>
       <CardsContainer>
-        {JSON.stringify(mappedPokemonData)}
+        {/* {JSON.stringify(mappedPokemonData)} */}
         {mappedPokemonData && mappedPokemonData.map((el) => (
             <PokemonCard id={el?.id} name={el?.name} types={el?.type}></PokemonCard>
         ))}

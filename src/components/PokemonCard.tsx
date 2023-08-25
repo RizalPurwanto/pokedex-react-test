@@ -99,7 +99,7 @@ export default function PokemonCard(props: PokemonCardProps) {
     }
     
     if (type === "electric") {
-      return "yellow ";
+      return "orange ";
     }
 
     if (type === "fire") {
