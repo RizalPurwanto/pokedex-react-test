@@ -6,7 +6,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { event } from "jquery";
 
 const PageContainer = styled.div`
-  height: 100%;
+  height: 120%;
   width: 100vw;
   display: flex;
   flex-direction: column;
@@ -75,6 +75,7 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [pokemonTypes, setPokemonTypes] = useState<Type[]>([]);
   const [selectedPokemonType, setSelectedPokemonType] = useState('none')
+  const [totalPokemonCount, setTotalPokemonCount] = useState(0)
 
 //   const handleScroll = () => {
 
@@ -111,14 +112,23 @@ export default function Home() {
         setIsLoading(false);
       });
   }
+  
   async function fetchPokemons() {
     setIsLoading(true);
     console.log('..fetching Pokemon...')
-    axios
-      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${100}`)
+
+    let limit =100
+    if(offSet <= totalPokemonCount) {
+
+
+      axios
+      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${limit}`)
       .then(async (resp) => {
         const pokemons = resp.data.results;
+        const totalPokemons = resp.data.count
+        setTotalPokemonCount(totalPokemons)
 
+        console.log(resp.data)
         let pokemonArr = await Promise.all(
           pokemons.map(async (pokemon: any) => {
             let pokemonDetails = await getPokemonDetails(pokemon.url);
@@ -126,23 +136,32 @@ export default function Home() {
             return pokemonDetails;
           })
         );
-        console.log(pokemonArr, "pokemonArr");
+        console.log(pokemonArr, `pokemonArr https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${20}`, );
+
 
         setPokemonList([...pokemonList, ...pokemonArr]);
-        setOffSet(offSet + 100);
+        setOffSet(offSet + limit);
       })
       .catch((err) => {
         console.log(err);
       })
       .finally(() => {
         setIsLoading(false);
+        console.log('....fetching finished')
       });
+    }
+   
   }
 
   useEffect(() => {
-    fetchTypes();
+    
     fetchPokemons();
   }, [selectedPokemonType]);
+
+  useEffect(() => {
+    fetchTypes()
+    fetchPokemons();
+  }, []);
 
     // useEffect(() => {
     //   window.addEventListener('scroll', handleScroll);
@@ -175,16 +194,16 @@ export default function Home() {
     
       <select defaultValue={"none"} onChange={(e) => handleSelect(e)}>
         <option value={"none"} >
-          None
+          All
         </option>
         {pokemonTypes.length > 0 &&
-          pokemonTypes.map((e,i) => <option key={i} value={e.name}>{e.name}</option>)}
+          pokemonTypes.map((e,i) => (e.name !== 'unknown' && e.name !== 'shadow') &&<option key={i} value={e.name}>{e.name}</option>)}
       </select>
       <InfiniteScroll
-        dataLength={mappedPokemonData.length}
+        dataLength={mappedPokemonData.length+1}
         next={fetchPokemons}
-        hasMore={true}
-        loader={<p>Loading...</p>}
+        hasMore={offSet < totalPokemonCount? true :false}
+        loader={<p>Loading more pokemon...</p>}
         endMessage={<p>No more data to load.</p>}
       >
        

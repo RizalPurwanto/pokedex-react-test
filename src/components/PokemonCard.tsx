@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { colorBasedonTypes } from "../helpers/helpers";
 const CardFrame = styled.div <{color?:string}>`
   display: flex;
   flex-direction: column;
@@ -11,6 +12,7 @@ const CardFrame = styled.div <{color?:string}>`
   border-color: #1d2929;
   border-width: 3px;
   border-style: solid;
+  cursor:pointer;
 `;
 
 const CardName = styled.div`
@@ -25,6 +27,7 @@ const CardName = styled.div`
   border-style:solid;
   border-width:1px;
   border-color:#1d2929;
+  overflow:hidden;
 `;
 
 const PokemonImageFrame = styled.div`
@@ -62,64 +65,25 @@ interface PokemonCardProps {
 }
 
 export default function PokemonCard(props: PokemonCardProps) {
-  const colorBasedonTypes = (type: string) => {
-    if (type === "bug" || type === "grass") {
-      return "forestGreen ";
-    }
-    
-    if (type === "flying" || type === "normal") {
-      return "BurlyWood  ";
-    }
-
-    if (type === "water" || type === "ice") {
-      return "lightSeaGreen";
-    }
-
-    if (type === "dragon") {
-      return "#DAA520";
-    }
-
-    if (type === "poison" || type === "psychic" || type === "ghost") {
-      return "purple";
-    }
-
-    if (type === "rock" || type === "fighting" || type === "ground") {
-      return "saddleBrown";
-    }
-
-    if (type === "fairy") {
-      return "magenta";
-    }
-
-    if (type === "dark") {
-      return "black";
-    }
-
-   if (type === "steel") {
-      return "lightSteelBlue ";
-    }
-    
-    if (type === "electric") {
-      return "#FDDA0D";
-    }
-
-    if (type === "fire") {
-      return "crimson ";
-    }
-
-    return "brown";
-  };
+ 
 
   let frameColor = "brown";
   if (props.types !== undefined) {
     frameColor = colorBasedonTypes(props.types[0]);
   }
 
+  let pokename = ''
+  if(props.name !== undefined) {
+   pokename= props.name.split('-').map((el) => el.charAt(0).toUpperCase() + el.slice(1)).join(" ")
+  }
+
   return (
-    <CardFrame color={frameColor}>
+  <a>
+  <CardFrame onClick={(e) => {console.log(pokename)}} color={frameColor}>
       <CardName>
-        {props.name !== undefined &&
-          props.name?.charAt(0).toUpperCase() + props.name?.slice(1)}
+        {/* {props.name !== undefined && 
+          props.name?.charAt(0).toUpperCase() + props.name?.slice(1)} */}
+          {pokename}
       </CardName>
       <PokemonImageFrame>
         <img
@@ -135,5 +99,7 @@ export default function PokemonCard(props: PokemonCardProps) {
             .join(", ")}
       </PokemonType>
     </CardFrame>
+  </a>
+  
   );
 }
