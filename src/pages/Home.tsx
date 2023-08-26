@@ -22,7 +22,7 @@ const TitleContainer = styled.div`
   height: 10vh;
   width: 80vw;
   font-size: 20px;
-  display:flex;
+  display: flex;
 `;
 
 const CardsContainer = styled.div`
@@ -35,6 +35,33 @@ const CardsContainer = styled.div`
   margin-left: 10vw;
   gap: 20px;
 `;
+
+const AppLogoBlack = styled.div({
+  color: "#61DBFB",
+  backgroundColor: "black",
+  borderRadius: "0px",
+  height: "30px",
+  padding: "5px",
+  borderTopLeftRadius: "10px",
+  borderBottomLeftRadius: "10px",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  fontWeight: "600",
+});
+const AppLogoYellow = styled.div({
+  color: "black",
+  backgroundColor: "#fff600",
+  borderTopRightRadius: "10px",
+  borderBottomRightRadius: "10px",
+  height: "30px",
+  padding: "5px",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  fontWeight: "600",
+});
+
 interface PokemonType {
   name: string;
 }
@@ -78,16 +105,6 @@ export default function Home() {
   const [pokemonTypes, setPokemonTypes] = useState<Type[]>([]);
   const [selectedPokemonType, setSelectedPokemonType] = useState("none");
   const [totalPokemonCount, setTotalPokemonCount] = useState(0);
-
-  //   const handleScroll = () => {
-
-  //       console.log(window.innerHeight + document.documentElement.scrollTop, `window.innerHeight + document.documentElement.scrollTop`)
-  //       console.log(document.documentElement.offsetHeight, `document.documentElement.offsetHeight`)
-  //       if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight+17 || isLoading) {
-  //         return;
-  //       }
-  //       fetchPokemons();
-  //     };
 
   async function getPokemonDetails(url: string): Promise<any> {
     const res = await axios.get(url).then((resp) => {
@@ -163,11 +180,6 @@ export default function Home() {
     fetchPokemons();
   }, []);
 
-  // useEffect(() => {
-  //   window.addEventListener('scroll', handleScroll);
-  //   return () => window.removeEventListener('scroll', handleScroll);
-  // }, [isLoading]);
-
   let mappedPokemonData = pokemonList.map((el: PokemonDetails) => {
     if (el.types !== undefined)
       return {
@@ -191,34 +203,19 @@ export default function Home() {
 
   return (
     <PageContainer>
-      <TitleContainer><div style={{
-        color:'#61DBFB',
-        backgroundColor:'black',
-        borderRadius:'0px',
-        height:'30px',
-        padding:'5px' , 
-        borderTopLeftRadius:'10px',
-        borderBottomLeftRadius:'10px',
-        display:'flex', 
-        flexDirection:'row',
-        alignItems:'center',
-        fontWeight:'600'
-      }}>
-        <img alt="pokeball" height={'25px'} src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}></img>
-        React</div><div style={{
-        color:'black',
-        backgroundColor:'#fff600',
-        borderTopRightRadius:'10px',
-        borderBottomRightRadius:'10px',
-        height:'30px',
-        padding:'5px' ,
-        display:'flex', 
-        flexDirection:'row',
-        alignItems:'center',
-        fontWeight:'600'
-      }}>Pokedex</div></TitleContainer>
+      <TitleContainer>
+        <AppLogoBlack>
+          <img
+            alt="pokeball"
+            height={"25px"}
+            src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}
+          ></img>
+          React
+        </AppLogoBlack>
+        <AppLogoYellow>Pokedex</AppLogoYellow>
+      </TitleContainer>
       <TypeSelection
-      currentSelectedType={selectedPokemonType}
+        currentSelectedType={selectedPokemonType}
         pokemonTypes={pokemonTypes}
         handleSelect={handleSelect}
       ></TypeSelection>
@@ -226,7 +223,11 @@ export default function Home() {
         dataLength={mappedPokemonData.length + 1}
         next={fetchPokemons}
         hasMore={offSet < totalPokemonCount ? true : false}
-        loader={<p>Loading more pokemon...</p>}
+        loader={<p>Loading more pokemon... <img
+          alt="pokeball"
+          height={"25px"}
+          src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}
+        ></img></p> }
         endMessage={<p>No more data to load.</p>}
       >
         <CardsContainer>
@@ -241,18 +242,6 @@ export default function Home() {
             ))}
         </CardsContainer>
       </InfiniteScroll>
-      {/* <CardsContainer>
-         
-          {mappedPokemonData &&
-            mappedPokemonData.map((el) => (
-              <PokemonCard
-              key={el?.id}
-                id={el?.id}
-                name={el?.name}
-                types={el?.type}
-              ></PokemonCard>
-            ))}
-        </CardsContainer> */}
     </PageContainer>
   );
 }
