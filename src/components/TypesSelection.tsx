@@ -22,10 +22,17 @@ const TypeOption = styled.option`
     color:darkSlateGray;
 `;
 
+const SelectorInnerContainer = styled.div`
+display:flex;
+flex-direction:row;
+gap:20px;
+align-items:center;
+`
+
 const SelectorContainer = styled.div`
     display:flex;
     flex-direction:row;
-    width:65%;
+    width:67%;
     color:mintCream;
     justify-content:flex-end;
     align-items:center;
@@ -49,8 +56,9 @@ export default function TypeSelection(props:TypeSelectionProps) {
 
   return (
     <SelectorContainer>
-        <div>Filter by Pokemon's type</div>
-      <TypeSelector color={color} defaultValue={"none"} onChange={(e) => props.handleSelect(e)}>
+         {/* <div>Click a card to see details</div> */}
+        
+       <SelectorInnerContainer><div>Filter by the Pokemon's type</div> <TypeSelector color={color} defaultValue={"none"} onChange={(e) => props.handleSelect(e)}>
         <TypeOption value={"none"}>All</TypeOption>
         {props.pokemonTypes.length > 0 &&
           props.pokemonTypes.map(
@@ -62,7 +70,8 @@ export default function TypeSelection(props:TypeSelectionProps) {
                 </TypeOption>
               )
           )}
-      </TypeSelector>
+      </TypeSelector></SelectorInnerContainer>
+     
     </SelectorContainer>
   );
 }
