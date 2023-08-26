@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios, { AxiosResponse } from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { event } from "jquery";
+import TypeSelection from "../components/TypesSelection";
 
 const PageContainer = styled.div`
   height: 120%;
@@ -19,8 +20,9 @@ const PageContainer = styled.div`
 const TitleContainer = styled.div`
   margin-top: 20px;
   height: 10vh;
-  width: 50vw;
+  width: 80vw;
   font-size: 20px;
+  display: flex;
 `;
 
 const CardsContainer = styled.div`
@@ -33,6 +35,33 @@ const CardsContainer = styled.div`
   margin-left: 10vw;
   gap: 20px;
 `;
+
+const AppLogoBlack = styled.div({
+  color: "#61DBFB",
+  backgroundColor: "black",
+  borderRadius: "0px",
+  height: "30px",
+  padding: "5px",
+  borderTopLeftRadius: "10px",
+  borderBottomLeftRadius: "10px",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  fontWeight: "600",
+});
+const AppLogoYellow = styled.div({
+  color: "black",
+  backgroundColor: "#fff600",
+  borderTopRightRadius: "10px",
+  borderBottomRightRadius: "10px",
+  height: "30px",
+  padding: "5px",
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  fontWeight: "600",
+});
+
 interface PokemonType {
   name: string;
 }
@@ -74,23 +103,11 @@ export default function Home() {
   const [pokemonList, setPokemonList] = useState<PokemonDetails[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pokemonTypes, setPokemonTypes] = useState<Type[]>([]);
-  const [selectedPokemonType, setSelectedPokemonType] = useState('none')
-  const [totalPokemonCount, setTotalPokemonCount] = useState(0)
-
-//   const handleScroll = () => {
-
-//       console.log(window.innerHeight + document.documentElement.scrollTop, `window.innerHeight + document.documentElement.scrollTop`)
-//       console.log(document.documentElement.offsetHeight, `document.documentElement.offsetHeight`)
-//       if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight+17 || isLoading) {
-//         return;
-//       }
-//       fetchPokemons();
-//     };
+  const [selectedPokemonType, setSelectedPokemonType] = useState("none");
+  const [totalPokemonCount, setTotalPokemonCount] = useState(0);
 
   async function getPokemonDetails(url: string): Promise<any> {
     const res = await axios.get(url).then((resp) => {
-   
-
       return resp.data;
     });
 
@@ -112,61 +129,56 @@ export default function Home() {
         setIsLoading(false);
       });
   }
-  
+
   async function fetchPokemons() {
     setIsLoading(true);
-    console.log('..fetching Pokemon...')
+    console.log("..fetching Pokemon...");
 
-    let limit =100
-    if(offSet <= totalPokemonCount) {
-
-
+    let limit = 100;
+    if (offSet <= totalPokemonCount) {
       axios
-      .get(`https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${limit}`)
-      .then(async (resp) => {
-        const pokemons = resp.data.results;
-        const totalPokemons = resp.data.count
-        setTotalPokemonCount(totalPokemons)
+        .get(
+          `https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${limit}`
+        )
+        .then(async (resp) => {
+          const pokemons = resp.data.results;
+          const totalPokemons = resp.data.count;
+          setTotalPokemonCount(totalPokemons);
 
-        console.log(resp.data)
-        let pokemonArr = await Promise.all(
-          pokemons.map(async (pokemon: any) => {
-            let pokemonDetails = await getPokemonDetails(pokemon.url);
-            // console.log(pokemonDetails, "pokemonDetails in foreach")
-            return pokemonDetails;
-          })
-        );
-        console.log(pokemonArr, `pokemonArr https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${20}`, );
+          console.log(resp.data);
+          let pokemonArr = await Promise.all(
+            pokemons.map(async (pokemon: any) => {
+              let pokemonDetails = await getPokemonDetails(pokemon.url);
+              // console.log(pokemonDetails, "pokemonDetails in foreach")
+              return pokemonDetails;
+            })
+          );
+          console.log(
+            pokemonArr,
+            `pokemonArr https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${20}`
+          );
 
-
-        setPokemonList([...pokemonList, ...pokemonArr]);
-        setOffSet(offSet + limit);
-      })
-      .catch((err) => {
-        console.log(err);
-      })
-      .finally(() => {
-        setIsLoading(false);
-        console.log('....fetching finished')
-      });
+          setPokemonList([...pokemonList, ...pokemonArr]);
+          setOffSet(offSet + limit);
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+          console.log("....fetching finished");
+        });
     }
-   
   }
 
   useEffect(() => {
-    
     fetchPokemons();
   }, [selectedPokemonType]);
 
   useEffect(() => {
-    fetchTypes()
+    fetchTypes();
     fetchPokemons();
   }, []);
-
-    // useEffect(() => {
-    //   window.addEventListener('scroll', handleScroll);
-    //   return () => window.removeEventListener('scroll', handleScroll);
-    // }, [isLoading]);
 
   let mappedPokemonData = pokemonList.map((el: PokemonDetails) => {
     if (el.types !== undefined)
@@ -176,44 +188,53 @@ export default function Home() {
         type: el.types.map((e) => e.type.name),
       };
   });
-  if(selectedPokemonType !== 'none') {
-    mappedPokemonData = mappedPokemonData.filter((el) => el?.type.some((e) =>e == selectedPokemonType))
+  if (selectedPokemonType !== "none") {
+    mappedPokemonData = mappedPokemonData.filter((el) =>
+      el?.type.some((e) => e == selectedPokemonType)
+    );
   }
 
-  const handleSelect =(event:any) => {
-        event.preventDefault()
-        console.log(event.target.value, "INI VALUE SELECTION")
-        const value = event.target.value
-        setSelectedPokemonType(value)
-
-  } 
+  const handleSelect = (event: any) => {
+    event.preventDefault();
+    console.log(event.target.value, "INI VALUE SELECTION");
+    const value = event.target.value;
+    setSelectedPokemonType(value);
+  };
 
   return (
     <PageContainer>
-      <TitleContainer>Pokedex</TitleContainer>
-    
-      <select defaultValue={"none"} onChange={(e) => handleSelect(e)}>
-        <option value={"none"} >
-          All
-        </option>
-        {pokemonTypes.length > 0 &&
-          pokemonTypes.map((e,i) => (e.name !== 'unknown' && e.name !== 'shadow') &&<option key={i} value={e.name}>{e.name}</option>)}
-      </select>
+      <TitleContainer>
+        <AppLogoBlack>
+          <img
+            alt="pokeball"
+            height={"25px"}
+            src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}
+          ></img>
+          React
+        </AppLogoBlack>
+        <AppLogoYellow>Pokedex</AppLogoYellow>
+      </TitleContainer>
+      <TypeSelection
+        currentSelectedType={selectedPokemonType}
+        pokemonTypes={pokemonTypes}
+        handleSelect={handleSelect}
+      ></TypeSelection>
       <InfiniteScroll
-        dataLength={mappedPokemonData.length+1}
+        dataLength={mappedPokemonData.length + 1}
         next={fetchPokemons}
-        hasMore={offSet < totalPokemonCount? true :false}
-        loader={<p>Loading more pokemon...</p>}
+        hasMore={offSet < totalPokemonCount ? true : false}
+        loader={<p>Loading more pokemon... <img
+          alt="pokeball"
+          height={"25px"}
+          src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}
+        ></img></p> }
         endMessage={<p>No more data to load.</p>}
       >
-       
-     <CardsContainer>
-    
-
+        <CardsContainer>
           {mappedPokemonData &&
             mappedPokemonData.map((el) => (
               <PokemonCard
-              key={el?.id}
+                key={el?.id}
                 id={el?.id}
                 name={el?.name}
                 types={el?.type}
@@ -221,18 +242,6 @@ export default function Home() {
             ))}
         </CardsContainer>
       </InfiniteScroll>
-      {/* <CardsContainer>
-         
-          {mappedPokemonData &&
-            mappedPokemonData.map((el) => (
-              <PokemonCard
-              key={el?.id}
-                id={el?.id}
-                name={el?.name}
-                types={el?.type}
-              ></PokemonCard>
-            ))}
-        </CardsContainer> */}
     </PageContainer>
   );
 }
