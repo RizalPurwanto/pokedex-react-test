@@ -20,8 +20,9 @@ const PageContainer = styled.div`
 const TitleContainer = styled.div`
   margin-top: 20px;
   height: 10vh;
-  width: 50vw;
+  width: 80vw;
   font-size: 20px;
+  display:flex;
 `;
 
 const CardsContainer = styled.div`
@@ -190,7 +191,32 @@ export default function Home() {
 
   return (
     <PageContainer>
-      <TitleContainer>Pokedex</TitleContainer>
+      <TitleContainer><div style={{
+        color:'#61DBFB',
+        backgroundColor:'black',
+        borderRadius:'0px',
+        height:'30px',
+        padding:'5px' , 
+        borderTopLeftRadius:'10px',
+        borderBottomLeftRadius:'10px',
+        display:'flex', 
+        flexDirection:'row',
+        alignItems:'center',
+        fontWeight:'600'
+      }}>
+        <img alt="pokeball" height={'25px'} src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}></img>
+        React</div><div style={{
+        color:'black',
+        backgroundColor:'#fff600',
+        borderTopRightRadius:'10px',
+        borderBottomRightRadius:'10px',
+        height:'30px',
+        padding:'5px' ,
+        display:'flex', 
+        flexDirection:'row',
+        alignItems:'center',
+        fontWeight:'600'
+      }}>Pokedex</div></TitleContainer>
       <TypeSelection
       currentSelectedType={selectedPokemonType}
         pokemonTypes={pokemonTypes}
