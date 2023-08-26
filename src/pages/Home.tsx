@@ -5,6 +5,7 @@ import axios, { AxiosResponse } from "axios";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { event } from "jquery";
 import TypeSelection from "../components/TypesSelection";
+import Modal from "react-modal";
 
 const PageContainer = styled.div`
   height: 120%;
@@ -77,23 +78,35 @@ interface Type {
 
 interface PokemonDetails {
   abilities?: {
-    ability?: {};
+    ability?: {
+      name?:string
+    };
     is_hidden: boolean;
     slot: number;
   }[];
-  base_experience: number;
+  height:number;
+  base_experience?: number;
   forms?: {}[];
   game_indices?: {}[];
   held_items?: {}[];
-  id: number;
-  is_default: boolean;
-  location_area_encounters: string;
-  moves?: {}[];
+  id?: number;
+  is_default?: boolean;
+  location_area_encounters?: string;
+  moves?: {
+    move?: {
+      name?:string
+    };
+  }[];
   name: string;
   pastTypes?: {}[];
   species?: {}[];
   sprites?: {}[];
-  stats?: {}[];
+  stats?: {
+    base_stat:number;
+    stat:{
+      name:string
+    }
+  }[];
   types?: PokemonTypes[] | any[];
   weight: number;
 }
@@ -105,6 +118,13 @@ export default function Home() {
   const [pokemonTypes, setPokemonTypes] = useState<Type[]>([]);
   const [selectedPokemonType, setSelectedPokemonType] = useState("none");
   const [totalPokemonCount, setTotalPokemonCount] = useState(0);
+
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [pokemonDetails, setPokemonDetails] = useState<PokemonDetails>({
+    name: "",
+    weight: 0,
+    height:0
+  });
 
   async function getPokemonDetails(url: string): Promise<any> {
     const res = await axios.get(url).then((resp) => {
@@ -180,6 +200,17 @@ export default function Home() {
     fetchPokemons();
   }, []);
 
+  function openModal(id: number) {
+    setModalOpen(true);
+    const clickedPokemon = pokemonList.find((el) => el.id === id);
+    clickedPokemon && setPokemonDetails(clickedPokemon);
+    console.log("SET MODAL OPEN");
+  }
+
+  function closeModal() {
+    setModalOpen(false);
+  }
+
   let mappedPokemonData = pokemonList.map((el: PokemonDetails) => {
     if (el.types !== undefined)
       return {
@@ -219,15 +250,110 @@ export default function Home() {
         pokemonTypes={pokemonTypes}
         handleSelect={handleSelect}
       ></TypeSelection>
+      <Modal
+        isOpen={isModalOpen}
+        style={{
+          content: {
+            top: "0%",
+            left: "50%",
+            right: "50%",
+            bottom: "-10%",
+            marginRight: "-50%",
+            marginTop: "20%",
+            transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexDirection: "row",
+            backgroundColor: "darkslategray",
+            borderRadius: "10px",
+            gap:'20px'
+          },
+        }}
+        onRequestClose={closeModal}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+          }}
+        >
+          <PokemonCard
+            key={pokemonDetails?.id}
+            id={pokemonDetails?.id}
+            name={pokemonDetails?.name}
+            types={
+              pokemonDetails.types &&
+              pokemonDetails?.types.map((e) => e.type.name)
+            }
+            onClick={() => {}}
+          ></PokemonCard>
+          <button
+            style={{
+              backgroundColor: "firebrick",
+              color: "mintcream",
+              fontSize: "15px",
+              fontWeight: "600",
+              borderRadius: "9px",
+              height: "30px",
+            }}
+            onClick={closeModal}
+          >
+            Close
+          </button>
+          
+        </div>
+        <div
+          style={{
+            backgroundColor:'wheat',
+            height:'90%',
+            width:'60%',
+            borderRadius:'10px',
+            display:'flex',
+            flexDirection:'column',
+            padding:'10px',
+            fontWeight:'600',
+            fontSize:'16px',
+            gap:'10px'
+
+          }}
+          >
+            <div>Base Exp: {pokemonDetails.base_experience} </div>
+            <div>Weight: {pokemonDetails.weight/10}kg </div>
+            <div>Height: {pokemonDetails.height/10}m </div>
+            <div>Abilities:  {pokemonDetails.abilities && pokemonDetails.abilities.map((el) =>el.ability&& el.ability.name&&  el.ability.name.split('-').map((el) => el.charAt(0).toUpperCase() + el.slice(1)).join(" ")).join(", ")}</div>
+            {/* <div>Moves:  </div>
+            <div style={{
+              overflowX:'hidden',
+              height:'40px',
+              wordWrap:'break-word',
+              color:'mintCream',
+              backgroundColor:'darkslategray',
+              padding:'4px',
+             
+              
+            }}>{pokemonDetails.moves && pokemonDetails.moves.map((el) =>el.move&& el.move.name&&  el.move.name.split('-').map((el) => el.charAt(0).toUpperCase() + el.slice(1)).join(" ")).join(", ")}</div> */}
+            {pokemonDetails.stats && pokemonDetails.stats.map((el) => (
+              <div>{el.stat.name.split('-').map((el) => el.charAt(0).toUpperCase() + el.slice(1)).join(" ")} : {el.base_stat}</div>
+            ))}
+          </div>
+
+        {/*       
+        <div>{JSON.stringify(pokemonDetails)}</div> */}
+      </Modal>
       <InfiniteScroll
         dataLength={mappedPokemonData.length + 1}
         next={fetchPokemons}
         hasMore={offSet < totalPokemonCount ? true : false}
-        loader={<p>Loading more pokemon... <img
-          alt="pokeball"
-          height={"25px"}
-          src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}
-        ></img></p> }
+        loader={
+          <p>
+            Loading more pokemon...{" "}
+            <img
+              alt="pokeball"
+              height={"25px"}
+              src={`https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/770px-Pok%C3%A9_Ball_icon.svg.png`}
+            ></img>
+          </p>
+        }
         endMessage={<p>No more data to load.</p>}
       >
         <CardsContainer>
@@ -238,6 +364,7 @@ export default function Home() {
                 id={el?.id}
                 name={el?.name}
                 types={el?.type}
+                onClick={openModal}
               ></PokemonCard>
             ))}
         </CardsContainer>

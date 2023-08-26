@@ -62,6 +62,7 @@ interface PokemonCardProps {
   id: number | undefined;
   name: string | undefined;
   types: string[] | undefined;
+ onClick(id:number):any
 }
 
 export default function PokemonCard(props: PokemonCardProps) {
@@ -79,8 +80,11 @@ export default function PokemonCard(props: PokemonCardProps) {
 
   return (
   <a>
-  <CardFrame onClick={(e) => {console.log(pokename)}} color={frameColor}>
-      <CardName>
+  <CardFrame onClick={(e) => {
+    e.preventDefault() 
+    props.id && props.onClick(props.id)
+  }} color={frameColor}>
+      <CardName >
         {/* {props.name !== undefined && 
           props.name?.charAt(0).toUpperCase() + props.name?.slice(1)} */}
           {pokename}
@@ -97,6 +101,7 @@ export default function PokemonCard(props: PokemonCardProps) {
           props.types
             .map((el) => el.charAt(0).toUpperCase() + el.slice(1))
             .join(", ")}
+        
       </PokemonType>
     </CardFrame>
   </a>
