@@ -139,7 +139,7 @@ export default function Home() {
       .get(`https://pokeapi.co/api/v2/type`)
       .then(async (resp) => {
         const types = resp.data.results;
-        console.log(types, "ini types");
+      
         setPokemonTypes(types);
       })
       .catch((err) => {
@@ -165,19 +165,15 @@ export default function Home() {
           const totalPokemons = resp.data.count;
           setTotalPokemonCount(totalPokemons);
 
-          console.log(resp.data);
+          
           let pokemonArr = await Promise.all(
             pokemons.map(async (pokemon: any) => {
               let pokemonDetails = await getPokemonDetails(pokemon.url);
-              // console.log(pokemonDetails, "pokemonDetails in foreach")
+          
               return pokemonDetails;
             })
           );
-          console.log(
-            pokemonArr,
-            `pokemonArr https://pokeapi.co/api/v2/pokemon?offset=${offSet}&limit=${20}`
-          );
-
+         
           setPokemonList([...pokemonList, ...pokemonArr]);
           setOffSet(offSet + limit);
         })
@@ -204,7 +200,7 @@ export default function Home() {
     setModalOpen(true);
     const clickedPokemon = pokemonList.find((el) => el.id === id);
     clickedPokemon && setPokemonDetails(clickedPokemon);
-    console.log("SET MODAL OPEN");
+
   }
 
   function closeModal() {
@@ -227,7 +223,6 @@ export default function Home() {
 
   const handleSelect = (event: any) => {
     event.preventDefault();
-    console.log(event.target.value, "INI VALUE SELECTION");
     const value = event.target.value;
     setSelectedPokemonType(value);
   };
@@ -337,8 +332,7 @@ export default function Home() {
             ))}
           </div>
 
-        {/*       
-        <div>{JSON.stringify(pokemonDetails)}</div> */}
+      
       </Modal>
       <InfiniteScroll
         dataLength={mappedPokemonData.length + 1}
